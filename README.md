@@ -11,6 +11,10 @@ segment-size evaluation, and `costWrite` for operation-cost calibration. The
 driver performs FP32 mean aggregation with a reproducible, internally generated
 dense feature matrix; it is not a complete GNN training framework.
 
+## Authors
+
+Hongxing He, Guanlin He, and Chunlin Li.
+
 ## Citation
 
 Please cite our paper if you use this code in your research.
@@ -22,21 +26,84 @@ Please cite our paper if you use this code in your research.
 
 ## Requirements
 
-- Linux and an NVIDIA GPU. The development GPU is an RTX 4080 SUPER.
-- Intel oneAPI DPC++/C++ compiler (`icpx`) with a working NVIDIA CUDA backend.
-  The source has been built with Intel oneAPI 2025.0.
-- A CUDA toolkit and NVIDIA driver compatible with the installed SYCL backend.
-- CMake 3.18 or newer and C++17 support.
+### Shared dependencies
+
+- Linux, CMake 3.18 or newer, and C++17 support.
+- A SYCL compiler and runtime with the backend required by the target device.
 - oneDPL headers, oneTBB, oneDNN, and the OpenCL loader. The host oneDPL
   preprocessing uses the parallel execution policy backed by oneTBB.
 - Eigen 3 headers. The current include path is
   `/usr/local/include/eigen3/Eigen`; adjust `CMakeLists.txt` if Eigen is
   installed elsewhere.
 
-The supplied build configuration targets the CUDA backend and `sm_89`.
-For another GPU architecture, update the architecture flag in both the compile
-and link options. A different backend also requires corresponding build and
-runtime configuration; the supplied CMake file is NVIDIA-specific.
+### NVIDIA GPUs
+
+- An NVIDIA GPU supported by the installed CUDA/SYCL backend. The paper's
+  Platform A uses a GeForce RTX 4080 SUPER with 16 GB of memory (`sm_89`).
+- Intel oneAPI DPC++/C++ Compiler 2025.0 (`icpx`) and the Codeplay oneAPI Plugin
+  for NVIDIA GPUs, or a compatible SYCL toolchain with CUDA backend support.
+- A compatible CUDA toolkit and NVIDIA driver. The recorded evaluation
+  environment uses CUDA 12.4 and NVIDIA driver 550.144.03.
+
+The supplied `CMakeLists.txt` and the Build example below target NVIDIA CUDA
+and `sm_89`. For another NVIDIA architecture, update the architecture flag in
+both the compile and link options.
+
+### AMD GPUs
+
+- An AMD GPU supported by the installed HIP/ROCm backend. The paper's Platform B
+  uses a Radeon RX 9060 XT with 16 GB of memory (RDNA 4, `gfx1200`).
+- An AMD-capable SYCL compiler and runtime. The evaluated AMD implementation
+  uses a source-built Intel-LLVM DPC++/SYCL toolchain targeting HIP/ROCm.
+- ROCm and a compatible AMD GPU driver. The recorded evaluation environment
+  uses the ROCm 7.0.3 backend.
+
+The AMD evaluation uses a separately configured HIP/ROCm build. The distributed
+CMake configuration is **NVIDIA-specific**, not a ready-to-use AMD build.
+Configure the AMD compiler, backend target, library paths, and runtime for both
+`cwlb-spmm` and `costWrite`, replacing the CUDA options in both the compile and
+link settings. Generate the operation-cost profile on the selected AMD GPU;
+do not reuse NVIDIA coefficients on AMD.
+
+### Other SYCL devices
+
+In principle, the SYCL source may also be adapted to other SYCL-capable devices
+with a suitable backend and the required device features. Backend/build
+settings and, where necessary, the current GPU device selector must be adapted.
+We have not separately validated execution or performance on devices other
+than the evaluated NVIDIA and AMD GPUs.
+
+## Project layout
+
+The source files and their roles are shown below. `resources/` and `build/`
+are local input/output and build directories; datasets, calibration results,
+and binaries are not included in the repository.
+
+```text
+CWLB-SpMM/
+|-- README.md                 # Full setup, datasets, and command-line guide.
+|-- CMakeLists.txt            # Build cwlb-spmm and costWrite; CUDA by default.
+|-- main.cpp                  # Load inputs, reorder rows, and run S selection/SpMM.
+|-- weightCost.cpp            # Calibrate device operation costs and save weights.
+|-- include/
+|   |-- config.h              # Timing counts, relative paths, and dense layout.
+|   |-- Matrix.h              # CSR and degree-reordered CSR data structures.
+|   |-- data.h                # Text-CSR dataset-loading interface.
+|   |-- parallelMatrix.h      # Standard and large-K SpMM kernel interfaces.
+|   `-- utils.h               # Task/cost structures and utility interfaces.
+|-- src/
+|   |-- Matrix.cpp            # CSR constructors and dense-to-CSR conversion.
+|   |-- data.cpp              # Parse/validate text CSR and assign unit edge values.
+|   |-- parallelMatrix.cpp    # SYCL SpMM kernels, local-memory reuse, and write-back.
+|   `-- utils.cpp             # Calibration, weighted partitioning, cost I/O, validation.
+|-- resources/                # Created locally; not shipped in the repository.
+|   |-- datasets/             # Place the 19 downloaded .csr files directly here.
+|   |-- spmm_costs.txt        # Generated by costWrite; required before SpMM.
+|   `-- results.txt           # Appended search/sweep results when requested.
+`-- build/                    # Generated by CMake; run executables from here.
+    |-- cwlb-spmm             # Graph aggregation and segment-size evaluation.
+    `-- costWrite             # Device operation-cost calibration executable.
+```
 
 ## Download datasets
 
@@ -88,23 +155,9 @@ Do not leave an extra `datasets/` or `csr/` layer inside
 Place all 19 `.csr` files **directly in `resources/datasets/` at the
 repository root**:
 
-```text
-CWLB-SpMM/
-  CMakeLists.txt
-  README.md
-  main.cpp
-  weightCost.cpp
-  include/
-  src/
-  resources/
-    datasets/
-      cora.csr
-      oregon-1.csr
-      ...
-      reddit.dgl.csr
-      products.csr
-  build/
-```
+For example, the final paths are `resources/datasets/cora.csr`,
+`resources/datasets/oregon-1.csr`, and `resources/datasets/reddit.dgl.csr`.
+See Project layout above for the complete source and runtime directory layout.
 
 Only the two-line text CSR format is accepted:
 
