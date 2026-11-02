@@ -17,11 +17,17 @@ Hongxing He, Guanlin He, and Chunlin Li.
 
 ## Citation
 
-Please cite our paper if you use this code in your research.
+Please cite our SSRN preprint if you use this code in your research.
 
-<!-- Add the BibTeX citation below. -->
 ```bibtex
-
+@misc{he2026cwlb,
+  title={{CWLB-SpMM}: Cost-Weighted Load Balancing for {SYCL}-Based {SpMM} Kernels in Graph Neural Networks},
+  author={He, Hongxing and He, Guanlin and Li, Chunlin},
+  year={2026},
+  howpublished={SSRN preprint},
+  doi={10.2139/ssrn.6889577},
+  url={https://ssrn.com/abstract=6889577}
+}
 ```
 
 ## Requirements
