@@ -122,39 +122,36 @@ cd CWLB-SpMM
 
 [Download datasets from Google Drive](https://drive.google.com/file/d/1EaSHNEg-F8dQ8iRS3dXdD5KVcHmJHixw/view).
 
-Download the dataset archive separately and place it in the repository root.
-The archive filenames below are examples; use the commands matching the actual
-archive format and internal layout.
+The download is `19datasets.zip`. Its 19 `.csr` files are stored inside an
+enclosing `19dataset/` directory. Use the browser link above or the Linux
+commands below, which require `wget` and `unzip`.
+
+### Download with wget
+
+From the repository root:
+
+```bash
+wget -c \
+  "https://drive.usercontent.google.com/download?id=1EaSHNEg-F8dQ8iRS3dXdD5KVcHmJHixw&export=download&confirm=t" \
+  -O 19datasets.zip
+```
+
+`-c` attempts to resume an interrupted download. If Google Drive denies the
+request or applies a download limit, use the browser link above.
 
 ### Extract the archive
 
-For a `.tar.gz` archive containing the `.csr` files directly at its root:
+Extract the CSR files from `19dataset/` directly into the expected input
+directory:
 
 ```bash
 mkdir -p resources/datasets
-tar -tzf datasets.tar.gz
-tar --keep-old-files -xzf datasets.tar.gz -C resources/datasets
+unzip -n -j 19datasets.zip '19dataset/*.csr' -d resources/datasets
 ```
 
-If the listing instead shows exactly one enclosing directory, such as
-`datasets/cora.csr`, use the following extraction command **instead**:
-
-```bash
-tar --keep-old-files -xzf datasets.tar.gz --strip-components=1 -C resources/datasets
-```
-
-For a `.zip` archive containing the `.csr` files directly at its root:
-
-```bash
-mkdir -p resources/datasets
-unzip -l datasets.zip
-unzip -n datasets.zip -d resources/datasets
-```
-
-These commands preserve existing files. If an archive contains additional
-directory levels, arrange the extracted files to match the layout below.
-Do not leave an extra `datasets/` or `csr/` layer inside
-`resources/datasets/`.
+`-j` discards the enclosing archive directory, and `-n` preserves existing
+files. The final path must be `resources/datasets/cora.csr`, not
+`resources/datasets/19dataset/cora.csr`. The ZIP archive is retained.
 
 ### Dataset location and format
 
