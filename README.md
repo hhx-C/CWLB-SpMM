@@ -114,11 +114,11 @@ git clone https://github.com/hhx-C/CWLB-SpMM.git
 cd CWLB-SpMM
 ```
 
-Download link: <!-- Add the dataset download URL here. -->
+[Download datasets from Google Drive](https://drive.google.com/file/d/1EaSHNEg-F8dQ8iRS3dXdD5KVcHmJHixw/view).
 
 Download the dataset archive separately and place it in the repository root.
-The download URL is reserved above. The archive filenames below are examples;
-use the commands matching the actual archive format and internal layout.
+The archive filenames below are examples; use the commands matching the actual
+archive format and internal layout.
 
 ### Extract the archive
 
