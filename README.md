@@ -19,7 +19,17 @@ Hongxing He, Guanlin He, and Chunlin Li.
 
 Please cite this paper if you use this code in your research:
 
-Hongxing He, Guanlin He\*, Chunlin Li\*. CWLB-SpMM: Cost-Weighted Load Balancing for SYCL-Based SpMM Kernels in Graph Neural Networks. Future Generation Computer Systems, 2026, accepted for publication.
+```bibtex
+@article{he2026cwlb,
+  author  = {He, Hongxing and He, Guanlin and Li, Chunlin},
+  title   = {{CWLB-SpMM}: Cost-Weighted Load Balancing for {SYCL}-Based {SpMM} Kernels in Graph Neural Networks},
+  journal = {Future Generation Computer Systems},
+  year    = {2026},
+  note    = {Accepted for publication}
+}
+```
+
+Corresponding authors: Guanlin He and Chunlin Li.
 
 ## Requirements
 
