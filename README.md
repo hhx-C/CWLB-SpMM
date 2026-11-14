@@ -89,6 +89,7 @@ and binaries are not included in the repository.
 ```text
 CWLB-SpMM/
 |-- README.md                 # Full setup, datasets, and command-line guide.
+|-- LICENSE                   # BSD 3-Clause license and copyright notice.
 |-- CMakeLists.txt            # Build cwlb-spmm and costWrite; CUDA by default.
 |-- main.cpp                  # Load inputs, reorder rows, and run S selection/SpMM.
 |-- weightCost.cpp            # Calibrate device operation costs and save weights.
@@ -409,3 +410,8 @@ terminal. For example, to retain a candidate-only log:
   if needed, set `CMAKE_PREFIX_PATH` to their installation prefixes.
 - **CUDA backend or architecture errors:** check that `icpx` has NVIDIA
   backend support and that both architecture flags match the target GPU.
+
+## License
+
+CWLB-SpMM is licensed under the BSD 3-Clause License.
+See [LICENSE](LICENSE) for details.
