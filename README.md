@@ -11,23 +11,29 @@ segment-size evaluation, and `costWrite` for operation-cost calibration. The
 driver performs FP32 mean aggregation with a reproducible, internally generated
 dense feature matrix; it is not a complete GNN training framework.
 
-## Authors
-
-Hongxing He, Guanlin He, and Chunlin Li.
-
 ## Citation
 
-Please cite this paper if you use this code in your research:
+Please cite the following paper if you use CWLB-SpMM in your research:
+
+Hongxing He, Guanlin He, and Chunlin Li. CWLB-SpMM: Cost-weighted load balancing
+for SYCL-Based SpMM kernels in graph neural networks. *Future Generation
+Computer Systems* **189** (2027), 108925.
+[https://doi.org/10.1016/j.future.2026.108925](https://doi.org/10.1016/j.future.2026.108925).
 
 ```bibtex
-@article{he2026cwlb,
+@article{he2027cwlb,
   author  = {He, Hongxing and He, Guanlin and Li, Chunlin},
-  title   = {{CWLB-SpMM}: Cost-Weighted Load Balancing for {SYCL}-Based {SpMM} Kernels in Graph Neural Networks},
+  title   = {{CWLB-SpMM}: Cost-weighted load balancing for {SYCL}-Based {SpMM} kernels in graph neural networks},
   journal = {Future Generation Computer Systems},
-  year    = {2026},
-  note    = {Accepted for publication}
+  volume  = {189},
+  pages   = {108925},
+  year    = {2027},
+  doi     = {10.1016/j.future.2026.108925},
+  url     = {https://doi.org/10.1016/j.future.2026.108925}
 }
 ```
+
+Published online in 2026; the volume year for citation is 2027.
 
 Corresponding authors: Guanlin He and Chunlin Li.
 
@@ -93,6 +99,9 @@ CWLB-SpMM/
 |-- CMakeLists.txt            # Build cwlb-spmm and costWrite; CUDA by default.
 |-- main.cpp                  # Load inputs, reorder rows, and run S selection/SpMM.
 |-- weightCost.cpp            # Calibrate device operation costs and save weights.
+|-- docs/
+|   `-- figures/
+|       `-- nvidia_speedup.png # Main NVIDIA performance comparison from the paper.
 |-- include/
 |   |-- config.h              # Timing counts, relative paths, and dense layout.
 |   |-- Matrix.h              # CSR and degree-reordered CSR data structures.
@@ -399,6 +408,29 @@ terminal. For example, to retain a candidate-only log:
 ```bash
 ./cwlb-spmm cora 128 --candidates > ../resources/cora_k128_candidates.log
 ```
+
+## Performance Results
+
+This figure summarizes the paper's main SpMM execution-time comparisons
+across 19 graph datasets on the NVIDIA GPU. For each dataset, speedup ratios are arithmetically
+averaged over feature dimensions K = 32, 64, 96, and 128. The paper uses five
+warm-up runs followed by ten timed runs per configuration, with execution
+times reported as arithmetic means. The measurements exclude preprocessing,
+operation-cost calibration, data transfers, and parameter search.
+
+### NVIDIA GeForce RTX 4080 SUPER
+
+![NVIDIA SpMM speedups normalized to cuSPARSE across 19 graph datasets](docs/figures/nvidia_speedup.png)
+
+Speedups are normalized to cuSPARSE; values above 1 indicate faster execution
+than cuSPARSE. Tuned CWLB-SpMM achieves 1.16×–2.38× speedups over cuSPARSE
+across all 19 datasets. It outperforms Accel-GCN on 18 datasets and tuned
+MergePath-SpMM on 14. Dashed markers show the released MergePath-SpMM setting
+and the three empirical CWLB-SpMM candidates; percentages indicate their
+performance relative to the corresponding tuned result.
+
+For the complete experimental settings and analysis, see the
+[published paper](https://doi.org/10.1016/j.future.2026.108925).
 
 ## Common setup issues
 
